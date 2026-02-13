@@ -208,3 +208,20 @@ GPL-3.0 (same as original exo)
 [Report Issues](https://github.com/Scottcjn/exo-cuda/issues) • [Original exo](https://github.com/exo-explore/exo)
 
 </div>
+
+
+## 中文简介
+
+Exo CUDA - 分布式 AI 推理的 CUDA 支持
+
+本项目为 Exo 分布式推理框架添加了 NVIDIA CUDA 支持，通过 tinygrad 实现高性能 GPU 加速。
+
+**主要功能：**
+- CUDA 加速的分布式推理
+- 支持 NVIDIA GPU 集群
+- 与 tinygrad 集成
+- 家庭 AI 集群的理想选择
+
+让你的多 GPU 家庭服务器发挥最大性能！
+
+Contributed by eelaine-wzw
