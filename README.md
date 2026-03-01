@@ -104,6 +104,29 @@ exo --inference-engine tinygrad --discovery-module manual \
     --discovery-config-path peers.json
 ```
 
+
+## Minimal Smoke Test (NVIDIA path)
+
+Run this exact sequence to confirm CUDA inference is actually healthy:
+
+```bash
+nvidia-smi
+nvcc --version
+python3 -c "from tinygrad import Device; print(Device.DEFAULT)"
+exo --inference-engine tinygrad --chatgpt-api-port 8001 --disable-tui
+```
+
+In another terminal:
+
+```bash
+curl -sS http://localhost:8001/v1/models
+curl -sS http://localhost:8001/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"llama-3.2-1b","messages":[{"role":"user","content":"ping"}],"max_tokens":16}'
+```
+
+If this works, your CUDA stack is ready for multi-node expansion.
+
 ## 🔌 API Usage
 
 exo provides a **ChatGPT-compatible API**:
