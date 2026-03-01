@@ -209,3 +209,49 @@ GPL-3.0 (same as original exo)
 [Report Issues](https://github.com/Scottcjn/exo-cuda/issues) • [Original exo](https://github.com/exo-explore/exo)
 
 </div>
+
+## Troubleshooting FAQ
+
+### Installation Issues
+
+**Q: Build fails with CUDA not found**
+A: Ensure CUDA toolkit is installed and `nvcc` is in your PATH:
+```bash
+export PATH=/usr/local/cuda/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+```
+
+**Q: CMake can't find CUDA**
+A: Set CUDA_HOME explicitly:
+```bash
+export CUDA_HOME=/usr/local/cuda
+cmake -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_HOME ..
+```
+
+### Runtime Issues
+
+**Q: CUDA out of memory error**
+A: Reduce batch size or model size, or use a GPU with more VRAM.
+
+**Q: Slow performance**
+A: Check GPU utilization with `nvidia-smi`. Ensure you're using the GPU, not CPU fallback.
+
+**Q: Driver version mismatch**
+A: Update NVIDIA drivers to match your CUDA version:
+```bash
+nvidia-smi  # Check current version
+# Update drivers as needed
+```
+
+### Common Errors
+
+**Q: `libcudart.so` not found**
+A: Add CUDA lib to library path:
+```bash
+sudo ldconfig /usr/local/cuda/lib64
+```
+
+**Q: Compilation warnings about deprecated APIs**
+A: These are usually safe to ignore, but consider updating to newer CUDA APIs.
+
+For more help, open an issue with your error message and system details.
