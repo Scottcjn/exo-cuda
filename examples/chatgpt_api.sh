@@ -1,4 +1,4 @@
-# exo provides an API that aims to be a drop-in replacements for the ChatGPT-API.
+# exo provides an API that aims to be a drop-in replacement for the ChatGPT-API.
 # This example shows how you can use the API first without streaming and second with streaming.
 # This works the same in a single-node set up and in a multi-node setup.
 # You need to start exo before running this by running `python3 main.py`.
