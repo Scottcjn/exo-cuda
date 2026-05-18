@@ -33,7 +33,7 @@ install_requires = [
 ]
 
 extras_require = {
-  "formatting": ["yapf==0.40.2",],
+  "formatting": ["yapf==0.43.0",],
   "apple_silicon": [
     "mlx==0.22.0",
     "mlx-lm==0.21.1",
