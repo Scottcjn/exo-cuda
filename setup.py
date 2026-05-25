@@ -18,7 +18,7 @@ install_requires = [
   "opencv-python==4.10.0.84",
   "pillow==10.4.0",
   "prometheus-client==0.20.0",
-  "protobuf==5.28.1",
+  "protobuf==7.35.0",
   "psutil==6.0.0",
   "pydantic==2.9.2",
   "requests==2.32.3",
