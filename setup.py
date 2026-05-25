@@ -7,7 +7,7 @@ from setuptools import find_packages, setup
 # Base requirements for all platforms
 install_requires = [
   "aiohttp==3.10.11",
-  "aiohttp_cors==0.7.0",
+  "aiohttp_cors==0.8.1",
   "aiofiles==24.1.0",
   "grpcio==1.68.0",
   "grpcio-tools==1.80.0",
