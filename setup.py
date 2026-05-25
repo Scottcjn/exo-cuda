@@ -12,7 +12,7 @@ install_requires = [
   "grpcio==1.68.0",
   "grpcio-tools==1.80.0",
   "Jinja2==3.1.6",
-  "numpy==2.0.0",
+  "numpy==2.4.6",
   "nuitka==2.5.1",
   "nvidia-ml-py==12.560.30",
   "opencv-python==4.10.0.84",
