@@ -10,7 +10,7 @@ install_requires = [
   "aiohttp_cors==0.8.1",
   "aiofiles==24.1.0",
   "grpcio==1.68.0",
-  "grpcio-tools==1.80.0",
+  "grpcio-tools==1.81.1",
   "Jinja2==3.1.6",
   "numpy==2.4.6",
   "nuitka==2.5.1",
