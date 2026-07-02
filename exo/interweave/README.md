@@ -316,6 +316,37 @@ shards = create_model_shards(
 )
 ```
 
+## Matmul Offload Servers
+
+Besides full shard routing, Interweave includes a lighter offload path:
+the model stays on the big-memory host (POWER8, 512GB RAM) and only the
+matrix multiplications are shipped to a GPU box over a binary TCP protocol.
+
+Two servers implement this:
+
+### matmul_server.py (reference, tested)
+
+One canonical Python server that replaced the ~20 prototypes this path was
+developed through. Dtype dispatch for F32, F16, Q8_0, Q4_K, and MXFP4 with
+correct ggml block sizes, input validation, per-recv socket timeouts, a GPU
+serialization lock, a localhost-bound health/metrics HTTP sidecar, and a
+CPU/NumPy fallback so it runs anywhere.
+
+```bash
+# Start the server (CUDA if available, CPU fallback otherwise)
+python exo/interweave/matmul_server.py --port 8096
+
+# Health check
+curl http://127.0.0.1:8097/health
+```
+
+### native/gpu_server_ms.cu (production)
+
+Multi-stream native CUDA server: per-connection cuBLAS lanes so requests
+overlap, plus a refcounted Q4_K weight cache. This is what serves the
+POWER8 to C4130 offload in production. See `native/README.md` for build
+and run instructions.
+
 ## Testing
 
 Run the test suite:
@@ -324,7 +355,10 @@ Run the test suite:
 cd /path/to/exo_cuda
 source .venv/bin/activate
 
-# Run all tests
+# Matmul offload server suite (CPU-runnable, no GPU required)
+cd exo/interweave && python -m pytest test_matmul_server.py test_gpu_cpu_parity.py
+
+# Run all protocol tests
 python -m exo.interweave.test_interweave
 
 # Simple component test
@@ -352,6 +386,12 @@ exo/interweave/
 │   ├── __init__.py
 │   ├── llamacpp.py       # llama.cpp backend
 │   └── tinygrad_cuda.py  # TinyGrad CUDA/CPU backends
+├── matmul_server.py      # Unified matmul offload server (reference)
+├── native/
+│   ├── gpu_server_ms.cu  # Production multi-stream CUDA server
+│   └── README.md         # Build and run instructions
+├── test_matmul_server.py # Matmul server suite (CPU-runnable)
+├── test_gpu_cpu_parity.py # GPU vs CPU numerical parity
 ├── test_interweave.py    # Test suite
 ├── simple_test.py        # Quick component test
 └── live_inference_test.py # Full inference test
