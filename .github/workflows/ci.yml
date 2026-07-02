@@ -20,6 +20,14 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install test dependencies
         run: pip install numpy pytest
+      # The matmul server and its tests are self-contained (numpy + stdlib).
+      # Run them outside the exo package tree so pytest does not import
+      # exo/__init__.py, which needs the full runtime dependency set.
       - name: Run matmul server test suite
-        working-directory: exo/interweave
-        run: python -m pytest test_matmul_server.py test_gpu_cpu_parity.py -v
+        run: |
+          mkdir /tmp/mmtest
+          cp exo/interweave/matmul_server.py \
+             exo/interweave/test_matmul_server.py \
+             exo/interweave/test_gpu_cpu_parity.py /tmp/mmtest/
+          cd /tmp/mmtest
+          python -m pytest test_matmul_server.py test_gpu_cpu_parity.py -v
