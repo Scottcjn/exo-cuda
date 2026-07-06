@@ -28,7 +28,7 @@ install_requires = [
   "tqdm==4.67.3",
   "transformers==4.46.3",
   "uuid==1.30",
-  "uvloop==0.21.0",
+  "uvloop==0.22.1",
   "tinygrad @ git+https://github.com/tinygrad/tinygrad.git@ec120ce6b9ce8e4ff4b5692566a683ef240e8bc8",
 ]
 
