@@ -20,7 +20,7 @@ install_requires = [
   "prometheus-client==0.20.0",
   "protobuf==5.28.1",
   "psutil==6.0.0",
-  "pydantic==2.9.2",
+  "pydantic==2.13.4",
   "requests==2.32.3",
   "rich==13.7.1",
   "scapy==2.6.1",
