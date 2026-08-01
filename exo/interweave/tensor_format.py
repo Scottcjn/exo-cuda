@@ -194,18 +194,28 @@ class UniversalTensor:
 
     def to_numpy(self) -> np.ndarray:
         """Convert to numpy array"""
+        # Quantized i8 stores unsigned zero-point levels (0..255, see
+        # convert_dtype). Reading them back through the signed int8 view
+        # would wrap anything >= 128 to a negative number and corrupt every
+        # dequantization that depends on it.
+        if self.dtype == DType.I8 and self.scale is not None:
+            arr = np.frombuffer(self.data, dtype=np.uint8)
+            return arr.reshape(self.shape)
+
         np_dtype = self.dtype.to_numpy()
         arr = np.frombuffer(self.data, dtype=np_dtype)
 
         # Handle packed i4
         if self.dtype == DType.I4:
-            # Unpack 4-bit values
-            unpacked = np.zeros(self.numel, dtype=np.int8)
-            for i, byte in enumerate(arr):
+            # Unpack 4-bit values. Nibbles hold unsigned zero-point levels
+            # (0..15, see convert_dtype) - matching how they were packed.
+            raw = arr.view(np.uint8)
+            unpacked = np.zeros(self.numel, dtype=np.uint8)
+            for i, byte in enumerate(raw):
                 if i * 2 < self.numel:
-                    unpacked[i * 2] = (byte & 0x0F) - 8  # Signed 4-bit
+                    unpacked[i * 2] = byte & 0x0F
                 if i * 2 + 1 < self.numel:
-                    unpacked[i * 2 + 1] = ((byte >> 4) & 0x0F) - 8
+                    unpacked[i * 2 + 1] = (byte >> 4) & 0x0F
             arr = unpacked
 
         return arr.reshape(self.shape)
@@ -263,20 +273,31 @@ class UniversalTensor:
         # Handle quantization
         if target_dtype in (DType.I8, DType.I4) and self.dtype in (DType.F32, DType.F16, DType.BF16):
             # Quantize: compute scale and zero point
-            min_val, max_val = arr.min(), arr.max()
+            min_val, max_val = float(arr.min()), float(arr.max())
+            value_range = max_val - min_val
+            levels = 255.0 if target_dtype == DType.I8 else 15.0
+            if value_range == 0.0:
+                # Constant block (e.g. zero-padded KV slot): there's no
+                # dynamic range to spread across levels, so fall back to a
+                # safe unit scale instead of dividing by zero and poisoning
+                # the whole tensor with NaN.
+                scale = 1.0
+                zero_point = round(-min_val)
+            else:
+                scale = value_range / levels
+                zero_point = round(-min_val / scale)
+            # Levels are unsigned zero-point offsets (0..255 / 0..15), matching
+            # how to_numpy() unpacks them back out below.
+            quantized_levels = np.round(arr / scale + zero_point).clip(0, levels).astype(np.uint8)
+
             if target_dtype == DType.I8:
-                scale = (max_val - min_val) / 255.0
-                zero_point = int(-min_val / scale)
-                quantized = np.round(arr / scale + zero_point).astype(np.int8)
-            else:  # I4
-                scale = (max_val - min_val) / 15.0
-                zero_point = int(-min_val / scale)
-                quantized = np.round(arr / scale + zero_point).clip(0, 15).astype(np.int8)
-                # Pack into bytes
-                packed = np.zeros((quantized.size + 1) // 2, dtype=np.uint8)
-                for i in range(0, quantized.size, 2):
-                    low = quantized.flat[i] & 0x0F
-                    high = (quantized.flat[i + 1] & 0x0F) if i + 1 < quantized.size else 0
+                quantized = quantized_levels
+            else:  # I4: pack two unsigned nibbles per byte
+                flat = quantized_levels.flatten()
+                packed = np.zeros((flat.size + 1) // 2, dtype=np.uint8)
+                for i in range(0, flat.size, 2):
+                    low = flat[i] & 0x0F
+                    high = (flat[i + 1] & 0x0F) if i + 1 < flat.size else 0
                     packed[i // 2] = low | (high << 4)
                 quantized = packed
 
