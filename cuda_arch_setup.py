@@ -57,7 +57,7 @@ def detect_cuda_gpus() -> List[Dict]:
                     
                     # Convert compute capability (e.g., 7.5) to (7, 5)
                     major = int(compute_cap)
-                    minor = int((compute_cap - major) * 10)
+                    minor = round((compute_cap - major) * 10)
                     
                     gpus.append({
                         'name': name,
