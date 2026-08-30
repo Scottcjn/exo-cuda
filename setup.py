@@ -23,7 +23,7 @@ install_requires = [
   "pydantic==2.13.4",
   "requests==2.32.3",
   "rich==13.7.1",
-  "scapy==2.6.1",
+  "scapy==2.7.0",
   "tenacity==9.1.4",
   "tqdm==4.67.3",
   "transformers==4.46.3",
