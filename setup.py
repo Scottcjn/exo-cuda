@@ -21,7 +21,7 @@ install_requires = [
   "protobuf==5.28.1",
   "psutil==6.0.0",
   "pydantic==2.13.4",
-  "requests==2.32.3",
+  "requests==2.34.2",
   "rich==13.7.1",
   "scapy==2.6.1",
   "tenacity==9.1.4",
