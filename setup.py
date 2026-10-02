@@ -40,7 +40,7 @@ extras_require = {
   ],
   "windows": ["pywin32==308",],
   "nvidia-gpu": ["nvidia-ml-py==12.560.30",],
-  "amd-gpu": ["pyrsmi==0.2.0"],
+  "amd-gpu": ["pyrsmi==1.1.0"],
 }
 
 # Check if running on macOS with Apple Silicon
