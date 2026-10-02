@@ -15,7 +15,7 @@ install_requires = [
   "numpy==2.4.6",
   "nuitka==2.5.1",
   "nvidia-ml-py==12.560.30",
-  "opencv-python==4.10.0.84",
+  "opencv-python==5.0.0.93",
   "pillow==10.4.0",
   "prometheus-client==0.20.0",
   "protobuf==5.28.1",
